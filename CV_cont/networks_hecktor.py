@@ -27,10 +27,9 @@ def DeepMTS(vol_size, Clinic_size):
     Clinic = Input(shape=[Clinic_size]) 
     
     Seg_pred, x_out1, x_out2, x_out3, x_out4, x_out5 = Seg_net([PET, CT])
-#     Seg_pred, x_out1, x_out2, x_out3, x_out4, x_out5 = U_net([PET, CT])
     
     ####################################################################
-    x_out6, x_out7, x_out8, Classifier_pred = Classifier_net([PET, CT, Seg_pred]) # Seg_pred
+    x_out6, x_out7, x_out8, Classifier_pred = Classifier_net([PET, CT, Seg_pred]) 
     ####################################################################
     
     x_in1 = [x_out1, x_out2, x_out3, x_out4, x_out5]
@@ -381,123 +380,5 @@ def Seg_net(x_in):
 
 #--------------------------------------------------------------------------------------
 
-def U_net(x_in):
-    
-    x_in = concatenate(x_in)
-    
-    x = Conv3D(8, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x_in)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    x = Conv3D(8, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x_out1 = Activation("relu")(x)
-    
-    
-    # downsampling 1
-    x = MaxPooling3D()(x_out1)
 
-    x = Conv3D(16, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    x = Conv3D(16, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x_out2 = Activation("relu")(x)
-    
-    
-    # downsampling 2
-    x = MaxPooling3D()(x_out2)
-    
-    x = Conv3D(32, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    x = Conv3D(32, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x_out3 = Activation("relu")(x)
-    
-    
-    # downsampling 3
-    x = MaxPooling3D()(x_out3)
-
-    x = Conv3D(64, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    x = Conv3D(64, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x_out4 = Activation("relu")(x)
-    
-    
-    # downsamping 4
-    x = MaxPooling3D()(x_out4)
-
-    x = Conv3D(128, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    x = Conv3D(128, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x_out5 = Activation("relu")(x)
-    
-    
-    # upsampling 1
-    x = UpSampling3D()(x_out5)
-    x = concatenate([x, x_out4])
-    
-    x = Conv3D(64, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    x = Conv3D(64, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    
-    # upsampling 2
-    x = UpSampling3D()(x)
-    x = concatenate([x, x_out3])
-    
-    x = Conv3D(32, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    x = Conv3D(32, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    
-    # upsampling 3
-    x = UpSampling3D()(x)
-    x = concatenate([x, x_out2])
-    
-    x = Conv3D(16, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    x = Conv3D(16, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    
-    # upsampling 4
-    x = UpSampling3D()(x)
-    x = concatenate([x, x_out1])
-    
-    x = Conv3D(8, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    x = Conv3D(8, 3, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = BatchNormalization()(x)
-    x = Activation("relu")(x)
-    
-    
-    # Segmentation outpur
-    x = Conv3D(2, 1, strides=1, padding="same", kernel_initializer="he_uniform")(x)
-    x = Activation("softmax")(x) 
-    Seg_pred = Lambda(lambda x: x[...,0:1], name="Segmentation")(x)
-
-    return Seg_pred, x_out1, x_out2, x_out3, x_out4, x_out5 
 
