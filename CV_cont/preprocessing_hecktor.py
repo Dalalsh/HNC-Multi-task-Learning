@@ -18,60 +18,6 @@ from scipy.ndimage.measurements import label
 
 
 
-
-def registeration_func(moving_image, fixed_image, initializer_state=None):
-    
-    fixed_image = sitk.Cast(fixed_image, sitk.sitkFloat32)
-    moving_image = sitk.Cast(moving_image, sitk.sitkFloat32)
-    
-    registration_method = sitk.ImageRegistrationMethod()
-    stats_filter = sitk.StatisticsImageFilter()
-    stats_filter.Execute(moving_image)
-    # Fixed bin size
-    numberOfHistogramBins = np.ceil(stats_filter.GetMaximum() / 0.1)
-    registration_method.SetMetricAsMattesMutualInformation(numberOfHistogramBins=int(numberOfHistogramBins))
-    registration_method.SetMetricSamplingStrategy(registration_method.RANDOM)
-    registration_method.SetMetricSamplingPercentage(0.1, seed=1024)
-    # TODO : work on optimizer
-    registration_method.SetOptimizerAsRegularStepGradientDescent(learningRate=5, minStep=0.001,
-                                                                 relaxationFactor=0.5,
-                                                                 numberOfIterations=10000,
-                                                                 estimateLearningRate=registration_method.EachIteration
-                                                                 )
-    registration_method.SetInterpolator(sitk.sitkLinear)
-    registration_method.SetOptimizerScalesFromPhysicalShift()
-
-    if initializer_state is None:
-        im_size = np.array(moving_image.GetSize(), dtype='float')
-        im_center = moving_image.TransformContinuousIndexToPhysicalPoint((im_size - 1) / 2)
-        initial_transform = sitk.VersorRigid3DTransform((0, 0, 0, 1), (0, 0, 0), im_center)
-    elif initializer_state == 'center':
-        initial_transform = sitk.CenteredTransformInitializer(fixed_image, moving_image,
-                                                              sitk.VersorRigid3DTransform(),
-                                                              sitk.CenteredTransformInitializerFilter.GEOMETRY)
-    registration_method.SetInitialTransform(initial_transform)
-
-    registration_method.SetShrinkFactorsPerLevel(shrinkFactors=[4, 2, 1])
-    registration_method.SetSmoothingSigmasPerLevel(smoothingSigmas=[2, 1, 0])
-    registration_method.SmoothingSigmasAreSpecifiedInPhysicalUnitsOn()
-
-    out_transform = registration_method.Execute(fixed_image, moving_image)
-
-
-    interpolator = sitk.sitkLinear
-    default_value = 0.
-    moving_resampled = sitk.Resample(moving_image, 
-                                     fixed_image, 
-                                     out_transform, 
-                                     interpolator,
-                                     default_value)
-    
-    return moving_resampled
-
-
-
-
-
 def hecktor_reampling(pet, ct, mask, resampledPixelSpacing):
     """Retrive from https://github.com/voreille/hecktor/blob/master/src/resampling/resample_2022.py
        Get the bounding boxes of the CT and PT images.
@@ -277,12 +223,6 @@ def data_preprocessing(sample_path, image_spacing, image_size, resize_method='Cr
     ct_orig = sitk.ReadImage(os.path.join(sample_path, 'CT.nii.gz'))
     roi_orig = sitk.ReadImage(os.path.join(sample_path, 'ROI_Binary.nii.gz'))
     df_orig = pd.read_excel(os.path.join(sample_path, 'Clinical_Total.xlsx'))
-    
-    
-##     # Apply registeration.
-##     pet_reg_orig = registeration_func(moving_image = pet_orig, 
-##                                       fixed_image = ct_orig, 
-##                                       initializer_state=None)
 
     
     # Apply Resampling.
