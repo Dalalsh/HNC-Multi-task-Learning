@@ -9,7 +9,7 @@ link will be added after publication
 
 
 ### Pre-processing Hecktor dataset:
-1. Please make sure to modify ####preprocessing_hecktor.py, by changing the path to your dataset
+1. Please make sure to modify preprocessing_hecktor.py, by changing the path to your dataset
 2. Run python preprocessing_hecktor.py
 
 
