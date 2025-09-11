@@ -11,8 +11,9 @@ link will be added after publication
 
 ## Packages:
 This project is built with **TensorFlow 2.x (GPU-compatible)** to leverage recent NVIDIA GPUs for training, python 3.8+ is required.
-1. pip install --no-cache-dir tensorflow[and-cuda]
-2. pip install --no-cache-dir torch==2.7.0 torchvision==0.22.0 torchaudio==2.7.0 --index-url http://download.pytorch.org/whl/cu126 --trusted-host download.pytorch.org
+1. Install all requirements (requirements.txt))
+2. Run pip install --no-cache-dir tensorflow[and-cuda]
+3. Run pip install --no-cache-dir torch==2.7.0 torchvision==0.22.0 torchaudio==2.7.0 --index-url http://download.pytorch.org/whl/cu126 --trusted-host download.pytorch.org
 
 
 ## Pre-processing Hecktor dataset:
