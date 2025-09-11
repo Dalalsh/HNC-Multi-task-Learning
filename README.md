@@ -16,7 +16,7 @@ This project is built with **TensorFlow 2.x (GPU-compatible)** to leverage recen
 
 
 ## Pre-processing Hecktor dataset:
-1. Modify preprocessing_hecktor.py, by changing the path to your dataset
+1. Modify preprocessing_hecktor.py, by changing the path to your dataset directory
 3. Run python preprocessing_hecktor.py
 
 
