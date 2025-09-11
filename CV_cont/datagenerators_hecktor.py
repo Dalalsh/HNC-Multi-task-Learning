@@ -191,6 +191,7 @@ def hecktor_reampling(pet, ct, mask, resampledPixelSpacing):
 
 def get_pet_based_bb(pet, image_size, th):
 
+
     np_pt = np.transpose(sitk.GetArrayFromImage(pet), (2, 1, 0))
     px_spacing_pt = pet.GetSpacing()
     px_origin_pt = pet.GetOrigin()
@@ -202,10 +203,6 @@ def get_pet_based_bb(pet, image_size, th):
 
     # Gaussian smooth
     np_pt_gauss = gaussian_filter(np_pt, sigma=3)
-
-    # # auto_th: based on max SUV value in the top of the PET scan
-    # th = np.max(np_pt[:, :, np.int(np_pt.shape[2] * 2 // 3):]) / 4
-    # print('th = ', th)
 
     # OR fixed threshold
     np_pt_thgauss = np.where(np_pt_gauss > th, 1, 0)
@@ -221,9 +218,13 @@ def get_pet_based_bb(pet, image_size, th):
         th = 0.1
         np_pt_thgauss = np.where(np_pt_gauss > th, 1, 0)
         labeled_array, _ = label(np_pt_thgauss)
-        np_pt_brain = labeled_array == np.argmax(
-            np.bincount(labeled_array[:, :,
-                                      np_pt.shape[2] * 2 // 3:].flat)[1:]) + 1
+        check_pt = np.bincount(labeled_array[:, :,
+                                      np_pt.shape[2] * 2 // 3:].flat)[1:]
+        if check_pt.size == 0 or check_pt.sum() == 0:
+            print('insufficient bounding box')
+            np_pt_brain = np.ones_like(np_pt, dtype=bool)
+        else:
+            np_pt_brain = labeled_array == np.argmax(check_pt) + 1
 
     # Find lowest voxel of the brain and box containing the brain
     z = np.min(np.argwhere(np.sum(np_pt_brain, axis=(0, 1))))
@@ -242,19 +243,19 @@ def get_pet_based_bb(pet, image_size, th):
         zbb = (z - (output_shape_pt[2] - zshift), z + zshift)
 
     yshift = 30 // px_spacing_pt[1]
-    if np.int((y2 + y1) / 2 - yshift - np.int(output_shape_pt[1] / 2)) < 0:
+    if int((y2 + y1) / 2 - yshift - int(output_shape_pt[1] / 2)) < 0:
         ybb = (0, output_shape_pt[1])
-    elif np.int((y2 + y1) / 2 - yshift -
-                np.int(output_shape_pt[1] / 2)) > np_pt.shape[1]:
+    elif int((y2 + y1) / 2 - yshift -
+                int(output_shape_pt[1] / 2)) > np_pt.shape[1]:
         ybb = np_pt.shape[1] - output_shape_pt[1], np_pt.shape[1]
     else:
         ybb = ((y2 + y1) / 2 - yshift - output_shape_pt[1] / 2,
                (y2 + y1) / 2 - yshift + output_shape_pt[1] / 2)
 
-    if np.int((x2 + x1) / 2 - np.int(output_shape_pt[0] / 2)) < 0:
+    if int((x2 + x1) / 2 - int(output_shape_pt[0] / 2)) < 0:
         xbb = (0, output_shape_pt[0])
-    elif np.int((x2 + x1) / 2 -
-                np.int(output_shape_pt[0] / 2)) > np_pt.shape[0]:
+    elif int((x2 + x1) / 2 -
+                int(output_shape_pt[0] / 2)) > np_pt.shape[0]:
         xbb = np_pt.shape[0] - output_shape_pt[0], np_pt.shape[0]
     else:
         xbb = ((x2 + x1) / 2 - output_shape_pt[0] / 2,
@@ -272,6 +273,7 @@ def get_pet_based_bb(pet, image_size, th):
     bb = np.asarray((x_abs, y_abs, z_abs)).flatten()
 
     return bb
+
 
 
 
