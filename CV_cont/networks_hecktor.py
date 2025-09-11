@@ -3,7 +3,6 @@ import sys
 import pdb
 
 # third party
-# Keras=2.3 and Tensorflow=1.15
 import numpy as np
 import keras.backend as K
 from keras.models import Model
