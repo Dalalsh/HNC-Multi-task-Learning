@@ -4,6 +4,8 @@ This work was developed and evaluated as part of our participation in the MICCAI
 
 In this work, we employed a multi-task learning framework that simultaneously performs Human Papillomavirus (HPV) classification, tumor segmentation, and survival prediction based on Positron Emission Tomography, Computed Tomography imaging, and clinical features. 
 
+This project is built with **TensorFlow 2.x (GPU-compatible)** to leverage recent NVIDIA GPUs for training.
+
 ### Paper:
 link will be added after publication
 
