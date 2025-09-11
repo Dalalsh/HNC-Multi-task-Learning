@@ -504,47 +504,6 @@ def train(data_dir,
                            )
 
         
-
-#         path_res_save = os.path.join(path_fold_save, 'Result')
-#         if os.path.exists(path_res_save) is not True:
-#             os.makedirs(path_res_save)
-
-
-#         # Evaluation over training set.
-#         print('\nEvaluation over training set:')
-#         cindex_val_train, dic_res_train = evaluation(net = model,
-#                                                    device = device,
-#                                                    vol_names = train_vol_names, 
-#                                                    image_spacing = vol_spacing, 
-#                                                    image_size = vol_size,
-#                                                    resize_method = resize_method)
-
-#         print('\nCindex Train: %.3f' %cindex_val_train)
-
-#         df_res_train = pd.DataFrame(dic_res_train)
-#         df_res_train.to_excel(os.path.join(path_res_save, 'Train_result.xlsx'),
-#                               index=False)
-
-
-
-#         # Evaluation over validation set.
-#         print('\nEvaluation over validation set:')
-#         cindex_val_validation, dic_res_validation = evaluation(net = model,
-#                                                                device = device,
-#                                                                vol_names = validation_vol_names,
-#                                                                image_spacing = vol_spacing, 
-#                                                                image_size = vol_size,
-#                                                                resize_method = resize_method)
-
-#         print('\nCindex Validation: %.3f' %cindex_val_validation)
-
-#         df_res_validation = pd.DataFrame(dic_res_validation)
-#         df_res_validation.to_excel(os.path.join(path_res_save, 'Validation_result.xlsx'),
-#                               index=False)
-
-     
-        
-        
         
 if __name__ == "__main__":
 
