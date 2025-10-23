@@ -6,7 +6,7 @@ In this work, we employed a multi-task learning framework that simultaneously pe
 
 
 ### Paper:
-link will be added after publication
+on HAL: https://hal.science/hal-05324964
 
 
 ## Packages:
